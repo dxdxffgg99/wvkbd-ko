@@ -142,6 +142,25 @@ Last, but not least, pressing Cmp + space or Cmp + ⌨  or Cmp + Abc opens up an
 index that allows you to immediately jump to any layout by name, even layouts
 not explicitly added to your layers on startup.
 
+# KOREAN INPUT
+
+The mobile international layout set ships an *ansi* layer that reproduces the
+main block of a physical US ANSI keyboard. Its letter keys carry both
+engravings, latin and dubeolsik jamo (두벌식, KS X 5002), the way the keycaps of
+a physical korean keyboard do, so there is no separate hangul layer to switch
+to.
+
+The keycode sent is the same either way; which of the two engravings you
+actually get is up to the input method - _fcitx5-hangul_, _ibus-hangul_,
+_kime_ - which has to be running and switched to hangul mode. Use whatever
+toggle you already use on your physical keyboard (fcitx5's default is
+Shift+space); for that reason *SHIFT_SPACE_IS_TAB* is disabled in
+_config.mobintl.h_, so shift+space is passed through untouched. The layer has a
+dedicated Tab key instead.
+
+If this layer types latin letters instead of 한글, the input method is simply
+not in hangul mode.
+
 # AUTHORS
 
 Created by John Sullivan <jsullivan@csumb.edu>, maintained by the Sxmo project

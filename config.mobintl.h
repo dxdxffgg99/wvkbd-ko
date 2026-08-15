@@ -3,7 +3,11 @@
 
 #define DEFAULT_FONT "Sans 14"
 #define DEFAULT_ROUNDING 5
-#define SHIFT_SPACE_IS_TAB
+/* Shift+space is left alone on purpose: it is the hangul toggle of most korean
+ * input method setups (fcitx5's TriggerKeys), and the ansi layout has
+ * a real Tab key anyway. Define this to get the old shift+space = tab shortcut
+ * back. */
+/* #define SHIFT_SPACE_IS_TAB */
 static const int transparency = 255;
 
 struct clr_scheme schemes[] = {
@@ -35,15 +39,17 @@ struct clr_scheme schemes[] = {
 
 /* layers is an ordered list of layouts, used to cycle through */
 static enum layout_id layers[] = {
-  Full, // First layout is the default layout on startup
+  Ansi, // First layout is the default layout on startup
   Special,
+  Full, // keeps the mobile layouts (and the Cmp/index key) reachable
   NumLayouts // signals the last item, may not be omitted
 };
 
 /* layers is an ordered list of layouts, used to cycle through */
 static enum layout_id landscape_layers[] = {
-  Landscape, // First layout is the default layout on startup
+  Ansi, // First layout is the default layout on startup
   LandscapeSpecial,
+  Landscape, // keeps the mobile layouts (and the Cmp/index key) reachable
   NumLayouts // signals the last item, may not be omitted
 };
 

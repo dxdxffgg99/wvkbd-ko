@@ -22,6 +22,7 @@ enum layout_id {
 	Greek,
 	Georgian,
 	Hebrew,
+	Ansi,
 	Emoji,
 	Nav,
 	Landscape,
@@ -70,6 +71,7 @@ enum layout_id {
 
 static struct key keys_full[], keys_full_wide[], keys_special[], keys_specialpad[], keys_simple[],
   keys_cyrillic[], keys_arabic[], keys_persian[], keys_georgian[], keys_greek[], keys_hebrew[],
+  keys_ansi[],
   keys_emoji[], keys_nav[], keys_landscape[], keys_landscape_special[], keys_compose_a[],
   keys_compose_e[], keys_compose_y[], keys_compose_u[], keys_compose_i[],
   keys_compose_o[], keys_compose_w[], keys_compose_r[], keys_compose_t[],
@@ -98,6 +100,7 @@ static struct layout layouts[NumLayouts] = {
   [Greek] = {keys_greek, "greek", "greek", true},
   [Georgian] = {keys_georgian, "georgian", "georgian", true},
   [Hebrew] = {keys_hebrew, "hebrew", "hebrew", true},
+  [Ansi] = {keys_ansi, "latin", "ansi", true},
   [Emoji] = {keys_emoji, "latin", "emoji", false},
   [Nav] = {keys_nav, "latin", "nav", false},
   [Landscape] = {keys_landscape, "latin", "landscape", true},
@@ -874,6 +877,108 @@ static struct key keys_hebrew[] = {
   {"", "", 0.0, Last},
 };
 
+/* Physical keyboard layout
+ *
+ * This mirrors the main block of a real US ANSI keyboard (the reference here is
+ * a Logitech K855 TKL): same key positions, same relative key widths, no
+ * on-screen-keyboard inventions. The function row and the navigation cluster
+ * are left out so the keys stay big enough to hit on a touchscreen; the arrow
+ * keys move into the bottom row like on a 65% board, and the slot the Fn key
+ * occupies on the real keyboard holds the layer switch (⌨), since Fn never
+ * reaches the OS anyway.
+ *
+ * The letter keys carry both engravings - latin and dubeolsik jamo (두벌식,
+ * KS X 5002) - just like the keycaps of a physical korean keyboard, so there is
+ * no separate hangul layer. The keycode sent is the same either way; which of
+ * the two engravings you actually get is up to the input method
+ * (fcitx5-hangul, ibus-hangul, kime, ...). Switch it to hangul mode the same
+ * way you do on the physical keyboard: fcitx5's default trigger is Shift+space,
+ * which is why SHIFT_SPACE_IS_TAB is off in config.mobintl.h.
+ *
+ * Note that caps lock only relabels single-character keys, so the dual labels
+ * keep showing their lower case form while caps lock is on (shift does swap
+ * them, and caps lock itself still works).
+ */
+static struct key keys_ansi[] = {
+  {"Esc", "Esc", 1.0, Code, KEY_ESC, .scheme = 1},
+  {"`", "~", 1.0, Code, KEY_GRAVE},
+  {"1", "!", 1.0, Code, KEY_1},
+  {"2", "@", 1.0, Code, KEY_2},
+  {"3", "#", 1.0, Code, KEY_3},
+  {"4", "$", 1.0, Code, KEY_4},
+  {"5", "%", 1.0, Code, KEY_5},
+  {"6", "^", 1.0, Code, KEY_6},
+  {"7", "&", 1.0, Code, KEY_7},
+  {"8", "*", 1.0, Code, KEY_8},
+  {"9", "(", 1.0, Code, KEY_9},
+  {"0", ")", 1.0, Code, KEY_0},
+  {"-", "_", 1.0, Code, KEY_MINUS},
+  {"=", "+", 1.0, Code, KEY_EQUAL},
+  {"⌫", "⌫", 2.0, Code, KEY_BACKSPACE, .scheme = 1},
+  {"", "", 0.0, EndRow},
+
+  {"Tab", "Tab", 2.0, Code, KEY_TAB, .scheme = 1},
+  {"q ㅂ", "Q ㅃ", 1.0, Code, KEY_Q},
+  {"w ㅈ", "W ㅉ", 1.0, Code, KEY_W},
+  {"e ㄷ", "E ㄸ", 1.0, Code, KEY_E},
+  {"r ㄱ", "R ㄲ", 1.0, Code, KEY_R},
+  {"t ㅅ", "T ㅆ", 1.0, Code, KEY_T},
+  {"y ㅛ", "Y ㅛ", 1.0, Code, KEY_Y},
+  {"u ㅕ", "U ㅕ", 1.0, Code, KEY_U},
+  {"i ㅑ", "I ㅑ", 1.0, Code, KEY_I},
+  {"o ㅐ", "O ㅒ", 1.0, Code, KEY_O},
+  {"p ㅔ", "P ㅖ", 1.0, Code, KEY_P},
+  {"[", "{", 1.0, Code, KEY_LEFTBRACE},
+  {"]", "}", 1.0, Code, KEY_RIGHTBRACE},
+  {"\\", "|", 2.0, Code, KEY_BACKSLASH},
+  {"", "", 0.0, EndRow},
+
+  {"Caps", "Caps", 2.0, Mod, CapsLock, .scheme = 1},
+  {"a ㅁ", "A ㅁ", 1.0, Code, KEY_A},
+  {"s ㄴ", "S ㄴ", 1.0, Code, KEY_S},
+  {"d ㅇ", "D ㅇ", 1.0, Code, KEY_D},
+  {"f ㄹ", "F ㄹ", 1.0, Code, KEY_F},
+  {"g ㅎ", "G ㅎ", 1.0, Code, KEY_G},
+  {"h ㅗ", "H ㅗ", 1.0, Code, KEY_H},
+  {"j ㅓ", "J ㅓ", 1.0, Code, KEY_J},
+  {"k ㅏ", "K ㅏ", 1.0, Code, KEY_K},
+  {"l ㅣ", "L ㅣ", 1.0, Code, KEY_L},
+  {";", ":", 1.0, Code, KEY_SEMICOLON},
+  {"'", "\"", 1.0, Code, KEY_APOSTROPHE},
+  {"Enter", "Enter", 3.0, Code, KEY_ENTER, .scheme = 1},
+  {"", "", 0.0, EndRow},
+
+  {"⇧", "⇫", 2.5, Mod, Shift, .scheme = 1},
+  {"z ㅋ", "Z ㅋ", 1.0, Code, KEY_Z},
+  {"x ㅌ", "X ㅌ", 1.0, Code, KEY_X},
+  {"c ㅊ", "C ㅊ", 1.0, Code, KEY_C},
+  {"v ㅍ", "V ㅍ", 1.0, Code, KEY_V},
+  {"b ㅠ", "B ㅠ", 1.0, Code, KEY_B},
+  {"n ㅜ", "N ㅜ", 1.0, Code, KEY_N},
+  {"m ㅡ", "M ㅡ", 1.0, Code, KEY_M},
+  {",", "<", 1.0, Code, KEY_COMMA},
+  {".", ">", 1.0, Code, KEY_DOT},
+  {"/", "?", 1.0, Code, KEY_SLASH},
+  {"⇧", "⇫", 2.5, Mod, Shift, .scheme = 1},
+  {"↑", "↑", 1.0, Code, KEY_UP, .scheme = 1},
+  {"", "", 0.0, EndRow},
+
+  {"Ctrl", "Ctrl", 1.25, Mod, Ctrl, .scheme = 1},
+  {"⌨͕", "⌨͔", 1.25, NextLayer, .scheme = 1},
+  {"⊞", "⊞", 1.25, Mod, Super, .scheme = 1},
+  {"Alt", "Alt", 1.25, Mod, Alt, .scheme = 1},
+  {"", "", 5.5, Code, KEY_SPACE},
+  {"Alt", "Alt", 1.25, Mod, Alt, .scheme = 1},
+  {"Ctrl", "Ctrl", 1.25, Mod, Ctrl, .scheme = 1},
+  {"←", "←", 1.0, Code, KEY_LEFT, .scheme = 1},
+  {"↓", "↓", 1.0, Code, KEY_DOWN, .scheme = 1},
+  {"→", "→", 1.0, Code, KEY_RIGHT, .scheme = 1},
+
+  /* end of layout */
+  {"", "", 0.0, Last},
+};
+
+
 static struct key keys_compose_a[] = {
   {"à", "À", 1.0, Copy, 0x00E0, 0, 0x00C0},
   {"á", "Á", 1.0, Copy, 0x00E1, 0, 0x00C1},
@@ -1098,6 +1203,7 @@ static struct key keys_index[] = {
   {"فر", "فر", 1.0, Layout, 0, &layouts[Persian], .scheme = 1},
   {"აბგ", "აბგ", 1.0, Layout, 0, &layouts[Georgian], .scheme = 1},
   {"א", "א", 1.0, Layout, 0, &layouts[Hebrew], .scheme = 1},
+  {"q ㅂ", "q ㅂ", 1.0, Layout, 0, &layouts[Ansi], .scheme = 1},
   {"", "", 0.0, Last},
 };
 
